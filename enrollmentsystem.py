@@ -53,6 +53,11 @@ def createCourse(courseCode, units):
     print("UNITS: " + str(newCourse.units) + "\n")
     return newCourse
 
+def checkStudent(ID, students):
+    for student in students:
+        if(student.ID==ID):
+            return true
+    return false
 class Student:
     name = ""
     ID = "0"
@@ -154,7 +159,10 @@ def main():
             name = input("Enter the name of the student:\n")
             for student in students:
                 if(student.name==name):
-                    student[student].remove() ##CHECK IF WORKING
+                    print("Student removed:")
+                    print("NAME: " + student.name)
+                    print("ID: " + str(student.ID))
+                    students.remove(student) ##CHECK IF WORKING
                     
         elif(choice==4):
             newCourse = inputCourse()
@@ -173,7 +181,7 @@ def main():
                             course.editUnits()
                             break
                         else: print("Invalid choice")
-            
+
         elif(choice==6):
             courses.append(inputCourse())
         elif(choice==7):
@@ -190,31 +198,39 @@ def main():
                             print("COURSE: " + course.code)
                             print("UNITS: " + course.units)
                             break
-            #enroll
+
         elif(choice==8):
             ID = input("Enter the ID number of the student: \n")
             courseCode = input("Enter the course code: \n")
-            for student in students:
-                if (student.ID==ID):
-                    for course in courses:
-                        if (courseCode==course.code):
-                            course.dropStudent(student)
-                            break
-            #drop
+            if(checkStudent(ID,students)):
+                for course in courses:
+                    if (courseCode==course.code):
+                        course.dropStudent(student)
+
         elif(choice==9):
             ID = input("Enter the ID number of the student:\n")
             courseCode = input("Enter the course code:\n")
             grade = float(input("Enter the grade of the student:\n"))
-            for student in students:
-                if (student.ID == ID):
+            if(checkStudent(ID,students)):
                     student.insertGrade(courseCode,grade)
-                    break
 
         elif(choice==10):
             ID = input("Enter the ID number of the student:\n")
-            for student in students:
-                if(student.ID == ID):
-                    print(student.grades)
+            if(checkStudent(ID,students)):
+                for student in students:
+                    if(student.ID == ID):
+                        print(student.grades)
+
+        elif(choice==11):
+            courseCode = input("Enter the course code: ")
+            for course in courses:
+                if(courseCode==course):
+                    i = 1
+                    for student in course.enrolledStudents:
+                        print("Student #" + i)
+                        print("NAME: " + student.name)
+                        print("ID: " + student.ID)
+                        i += 1
 
 if __name__== "__main__":
   main()
