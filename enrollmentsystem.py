@@ -19,8 +19,7 @@ def inputStudent():
         break
 
     return createStudent(name,str(ID))
-        
-    
+
 def createStudent(name, ID, grades = {}):
     newStudent = Student(name,ID)
     newStudent.grades = grades
@@ -91,7 +90,7 @@ class Student:
         print("NAME: " + self.name)
         print("ID: " + self.ID)
 
-    def insertGrade(self,code,grade):
+    def enrollStudent(self,code,grade):
         newGrade = {code:grade}
         self.grades = newGrade
 
@@ -100,12 +99,12 @@ class Student:
 
     def removeGrade(self, code):
         del self.grades[code]
-        
 
         
 class Course:
     code = "" # 7 characters(Capital Letters, Numbers, Dash)
     units = 0.0 # floating, 0 to 4
+    studentsEnrolled = [];
     
     def __init__(self,code,units):
         self.code = code
@@ -117,9 +116,22 @@ class Course:
     def editUnits(self,units):
         self.units = units
 
+    def enrollStudent(self, student):
+        self.studentsEnrolled.append(student)
+
+    def dropStudent(self, student):
+        for student2 in self.studentsEnrolled:
+            if (student2.ID==student.ID):
+                self.studentsEnrolled.remove(student2)
+                print("Successfully dropped. ")
+            else:
+                print("Student not found. ")
+                break
+
 def main():
     students = []
     courses = []
+
     while(True):
         choice = int(input("1 - Add Student\n2 - Edit Student Info\n3 - Delete Student\n4 - Add Course\n5 - Edit Course\n6 - Create a course\n7 - Enroll a student in a course\n8 - Drop a student from a course\n9 - Set a student's grade for a course\n10 - View a student's report card:\n"))
         if(choice==1):
@@ -165,10 +177,29 @@ def main():
         elif(choice==6):
             courses.append(inputCourse())
         elif(choice==7):
-            pass
+            ID = input("Enter the ID number of the student: \n")
+            courseCode = input("Enter the course code: \n")
+            for student in students:
+                if (student.ID==ID):
+                    for course in courses:
+                        if (courseCode==course.code):
+                            course.enrollStudent(student)
+                            print("Student enrolled: ")
+                            print("NAME: " + student.name)
+                            print("ID: " + student.ID)
+                            print("COURSE: " + course.code)
+                            print("UNITS: " + course.units)
+                            break
             #enroll
         elif(choice==8):
-            pass
+            ID = input("Enter the ID number of the student: \n")
+            courseCode = input("Enter the course code: \n")
+            for student in students:
+                if (student.ID==ID):
+                    for course in courses:
+                        if (courseCode==course.code):
+                            course.dropStudent(student)
+                            break
             #drop
         elif(choice==9):
             ID = input("Enter the ID number of the student:\n")
@@ -189,6 +220,10 @@ if __name__== "__main__":
   main()
 
 
-
-
-
+'''
+1. View All Students Enrolled
+2. View Top 5 Students
+3. Fix the incrementation of grades
+4. Drop a student in a course
+5.
+'''
