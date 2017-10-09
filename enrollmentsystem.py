@@ -4,7 +4,7 @@ def inputStudent(students):
     while True:
         name = input("Input student name: ")
         if not re.match("^[\sA-Za-z]*$", name):
-            print("Error: Only characters a-z are allowed")
+            print("Error: Only letters are allowed")
             continue
         break
     while True:
@@ -16,20 +16,28 @@ def inputStudent(students):
         if(len(str(ID))!= 8):
             print("ID Number must contain exactly 8 numbers")
             continue
+        ID = str(ID)
         if(checkStudent(ID,students)):
             print("Error: ID already exists")
             continue
         break
-
-    return createStudent(name,str(ID))
+    return createStudent(name,ID)
 
 def createStudent(name, ID, grades = {}):
     newStudent = Student(name,ID)
     newStudent.grades = grades
     print("Student Added:")
     print("NAME: " + newStudent.name)
-    print("ID: " + str(newStudent.ID)+ "\n")
+    print("ID: " + newStudent.ID + "\n")
     return newStudent
+
+def checkUnits(units):
+    i = 0.0
+    while (i<=4.0):
+        if (units==i):
+            return True
+        i = i+0.5
+    return False
 
 def inputCourse(courses):
     while True:
@@ -40,17 +48,25 @@ def inputCourse(courses):
         if (len(courseCode)!=7):
             print("Error: Course Code must consist of exactly 7 characters")
             continue
+        if(checkCourse(courseCode,courses)):
+            print("Error: Course already exists")
+            continue
         break
     while True:
         units = input("Input number of units for " + courseCode + ": ")
         if not re.match("^[0-4.5]",units):
             print("Error: Unit's value must be in the range from 0 to 4 (including floating)")
             continue
-        for course in courses:
-            if (course.code==courseCode):
-                print("Error: Course already exists")
-                continue
-        break
+        units = float(units)
+        if not checkUnits(units):
+            print("Error: Unit's value must be 0 to 4 units only (in increments of 5)")
+            continue
+        else:
+            for course in courses:
+                if (course.code==courseCode):
+                    print("Error: Course already exists")
+                    continue
+            break
     return createCourse(courseCode,units)
 
 def createCourse(courseCode, units):
@@ -66,11 +82,21 @@ def checkStudent(ID, students):
             return True
     return False
 
+def checkEnrolled(ID, course):
+    print("check enrolled")
+    for student in course.studentsEnrolled:
+        if (student.ID == ID):
+            print("ahh")
+            return True
+    print("false")
+    return False
+
+
 def getStudent(ID, students):
     for student in students:
         if(student.ID==ID):
             return student
-    return null
+    return None
 
 def checkCourse(courseCode, courses):
     for course in courses:
@@ -82,7 +108,7 @@ def getCourse(courseCode, courses):
     for course in courses:
         if(course.code==courseCode):
             return course
-    return null
+    return None
 
 def dropAll(ID, courses):
     for course in courses:
@@ -90,6 +116,15 @@ def dropAll(ID, courses):
             if(student.ID==ID):
                 print("Dropped student in " + course.code)
                 course.studentsEnrolled.remove(student)
+
+
+
+def viewAllStudents(students):
+    for student in students:
+        print("NAME: " + student.name)
+        print("ID: " + student.ID)
+        print(student.grades)
+        print("\n\n")
 
 class Student:
     name = ""
@@ -179,6 +214,7 @@ def main():
             if(checkStudent(ID,students)):
                 while True:
                     editChoice = int(input("1 - Edit name\n2- Edit ID number:\n"))
+                    student = getStudent(ID,students)
                     if (editChoice == 1):
                         student.editName()
                         break
@@ -214,7 +250,7 @@ def main():
                     if (courseEditChoice == 1):
                         course.editCode()
                         break
-                    elif (coursEditChocie == 2):
+                    elif (courseEditChoice == 2):
                         course.editUnits()
                         break
                     else:
@@ -227,16 +263,19 @@ def main():
         elif(choice==7):
             ID = input("Enter the ID number of the student: \n")
             if(checkStudent(ID,students)):
+                student = getStudent(ID, students)
                 courseCode = input("Enter the course code: \n")
                 if(checkCourse(courseCode,courses)):
                     course = getCourse(courseCode,courses)
-                    student = getStudent(ID,students)
-                    course.enrollStudent(student)
-                    print("Student enrolled: ")
-                    print("NAME: " + student.name)
-                    print("ID: " + student.ID)
-                    print("COURSE: " + course.code)
-                    print("UNITS: " + course.units)
+                    if (checkEnrolled(str(ID), course)):
+                        print("ERROR: Student is already enrolled in the course")
+                    else:
+                        course.enrollStudent(student)
+                        print("Student enrolled: ")
+                        print("NAME: " + student.name)
+                        print("ID: " + student.ID)
+                        print("COURSE: " + course.code)
+                        print("UNITS: " + str(course.units))
                 else:
                     print("Error: Course does not exist")
             else:
@@ -248,8 +287,12 @@ def main():
                 courseCode = input("Enter the course code: \n")
                 if(checkCourse(courseCode,courses)):
                     course = getCourse(courseCode,courses)
-                    student = getStudent(ID,students)
-                    course.dropStudent(student)
+                    if(checkEnrolled(ID,course)):
+                        course = getCourse(courseCode,courses)
+                        student = getStudent(ID,students)
+                        course.dropStudent(student)
+                    else:
+                        print("Error: Student is not enrolled in class")
                 else:
                     print("Error: Course does not exist")
             else:
@@ -261,9 +304,17 @@ def main():
                 courseCode = input("Enter the course code:\n")
                 if(checkCourse(courseCode, courses)):
                     course = getCourse(courseCode,courses)
-                    student = getStudent(ID,students)
-                    grade = float(input("Enter the grade of the student:\n"))
-                    student.insertGrade(courseCode,grade)
+                    if(checkEnrolled(ID,course)):
+                        student = getStudent(ID,students)
+                        grade = float(input("Enter the grade of the student:\n"))
+                        while True:
+                            if (checkUnits(grade)):
+                                student.editGrade(courseCode,grade)
+                                break
+                            else:
+                                print("Error: Invalid grade")
+                    else:
+                        print("Error: Student is not enrolled in course")
                 else:
                     print("Error: Course does not exist")
             else:
@@ -289,6 +340,8 @@ def main():
                     i += 1
             else:
                 print("Error: Course does not exist")
+        elif(choice==12):
+            viewAllStudents(students)
 
 
 if __name__== "__main__":
@@ -296,9 +349,6 @@ if __name__== "__main__":
 
 
 '''
-1. View All Students Enrolled
-2. View Top 5 Students
-3. Fix the incrementation of grades
-4. Drop a student in a course
-5. Fix duplicate entries of ID
+1. View Top 5 Students
+2. More error checking
 '''
