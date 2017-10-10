@@ -76,6 +76,20 @@ def createCourse(courseCode, units):
     print("UNITS: " + str(newCourse.units) + "\n")
     return newCourse
 
+def inputCourse2(courses):
+    while True:
+        courseCode = input("Input course code: ")
+        if not re.match("^[A-Z0-9-]*$", courseCode):
+            print("Error: Course Code must consist of only uppercase letters, numbers and dash")
+            continue
+        if (len(courseCode)!=7):
+            print("Error: Course Code must consist of exactly 7 characters")
+            continue
+        if(checkCourse(courseCode,courses)):
+            print("Error: Course already exists")
+            continue
+        return courseCode
+
 def checkStudent(ID, students):
     for student in students:
         if(student.ID==ID):
@@ -206,7 +220,11 @@ def main():
     courses = []
 
     while(True):
-        choice = int(input("1 - Add Student\n2 - Edit Student Info\n3 - Delete Student\n4 - Add Course\n5 - Edit Course\n6 - Create a course\n7 - Enroll a student in a course\n8 - Drop a student from a course\n9 - Set a student's grade for a course\n10 - View a student's report card:\n"))
+        try:
+            choice = int(input("1 - Add Student\n2 - Edit Student Info\n3 - Delete Student\n4 - Add Course\n5 - Edit Course\n6 - Enroll a student in a course\n7 - Drop a student from a course\n8 - Set a student's grade for a course\n9 - View a student's report card:\n10 - View all students in a course\n11 - View all students\n"))
+        except ValueError:
+            print("Error: Invalid input")
+            continue
         if(choice==1):
             students.append(inputStudent(students))
         elif(choice==2):
@@ -229,6 +247,7 @@ def main():
         elif(choice==3):
             ID = input("Enter the ID number of the student:\n")
             if(checkStudent(ID,students)):
+                student = getStudent(ID,students)
                 print("Student removed:")
                 print("NAME: " + student.name)
                 print("ID: " + str(student.ID))
@@ -248,7 +267,7 @@ def main():
                     courseEditChoice = int(input("1 - Edit Course Code\n2 - Edit Units:\n"))
                     course = getCourse(courseCode,courses)
                     if (courseEditChoice == 1):
-                        course.editCode()
+                        course.editCode(inputCourse2(courses))
                         break
                     elif (courseEditChoice == 2):
                         course.editUnits()
@@ -259,8 +278,6 @@ def main():
                 print("Error: Course does not exist")
 
         elif(choice==6):
-            courses.append(inputCourse())
-        elif(choice==7):
             ID = input("Enter the ID number of the student: \n")
             if(checkStudent(ID,students)):
                 student = getStudent(ID, students)
@@ -281,7 +298,7 @@ def main():
             else:
                 print("Error: ID number does not exist")
 
-        elif(choice==8):
+        elif(choice==7):
             ID = input("Enter the ID number of the student: \n")
             if(checkStudent(ID,students)):
                 courseCode = input("Enter the course code: \n")
@@ -298,7 +315,7 @@ def main():
             else:
                 print("Error: ID Number does not exist")
 
-        elif(choice==9):
+        elif(choice==8):
             ID = input("Enter the ID number of the student:\n")
             if(checkStudent(ID,students)):
                 courseCode = input("Enter the course code:\n")
@@ -320,7 +337,7 @@ def main():
             else:
                 print("Error: ID number does not exist")
 
-        elif(choice==10):
+        elif(choice==9):
             ID = input("Enter the ID number of the student:\n")
             if(checkStudent(ID,students)):
                 student = getStudent(ID,students)
@@ -328,7 +345,7 @@ def main():
             else:
                 print("Error: ID number does not exist")
 
-        elif(choice==11):
+        elif(choice==10):
             courseCode = input("Enter the course code: ")
             if(checkCourse(courseCode,courses)):
                 course = getCourse(courseCode, courses)
@@ -340,7 +357,7 @@ def main():
                     i += 1
             else:
                 print("Error: Course does not exist")
-        elif(choice==12):
+        elif(choice==11):
             viewAllStudents(students)
 
 
