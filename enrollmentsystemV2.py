@@ -70,7 +70,8 @@ def inputCourse(courses):
     return createCourse(courseCode,units)
 
 def createCourse(courseCode, units):
-    newCourse = Course(courseCode,units)
+    studentsEnrolled = []
+    newCourse = Course(courseCode,units,studentsEnrolled)
     print("Course created:")
     print("COURSECODE: " + newCourse.code)
     print("UNITS: " + str(newCourse.units) + "\n")
@@ -191,11 +192,12 @@ class Student:
 class Course:
     code = "" # 7 characters(Capital Letters, Numbers, Dash)
     units = 0.0 # floating, 0 to 4
-    studentsEnrolled = [];
+    studentsEnrolled = []
     
-    def __init__(self,code,units):
+    def __init__(self,code,units, studentsEnrolled):
         self.code = code
         self.units = units
+        self.studentsEnrolled = studentsEnrolled
         
     def editCode(self,code):
         self.code = code
@@ -218,6 +220,7 @@ class Course:
 def main():
     students = []
     courses = []
+    
 
     while(True):
         try:
